@@ -142,7 +142,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head></head>
+      <head>
+        <script
+          src="https://quge5.com/88/tag.min.js"
+          data-zone="206815"
+          async
+          data-cfasync="false"
+        ></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
