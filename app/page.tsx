@@ -1,6 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Toaster } from "sonner";
+import { AffiliatePopup } from "@/components/affiliate-popup";
 import { FancyTextGenerator } from "@/components/fancy-text-generator";
 import { MobileMenu } from "@/components/mobile-menu";
 import { SiteFooter } from "@/components/site-footer";
@@ -28,26 +28,18 @@ const faqSchema = {
     },
     {
       "@type": "Question",
-      name: "Can I use fancy text for commercial purposes?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "The text transformations are free to use for any purpose, including commercial projects. Unicode characters are universal standards and can be used without restrictions.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Does fancy text affect SEO or accessibility?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "For SEO: Search engines may not recognize fancy Unicode text the same way as regular text, so it's best to use standard text for important keywords. For accessibility: Screen readers may struggle with certain Unicode characters, so use regular text for critical content.",
-      },
-    },
-    {
-      "@type": "Question",
       name: "How do I copy the generated text?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Simply click the 'Copy' button next to any styled text result. This font generator provides easy copy and paste functionality - the text will be copied to your clipboard and you can paste it anywhere you like. The button will show a checkmark to confirm the text has been copied.",
+        text: "Simply click the 'Copy' button next to any styled text result. The text will be copied to your clipboard and you can paste it anywhere you like.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Can I use fancy text for commercial purposes?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Unicode characters are universal standards and can be used without restrictions for any purpose.",
       },
     },
     {
@@ -55,7 +47,7 @@ const faqSchema = {
       name: "Does the generator support multiple languages?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes! The generator supports both English and Chinese characters. For languages with Unicode character variants (like English), they will be transformed. For languages without variants (like Chinese), the original characters are preserved while maintaining readability.",
+        text: "Yes! The generator supports both English and Chinese characters. For languages without Unicode variants, the original characters are preserved while maintaining readability.",
       },
     },
   ],
@@ -90,25 +82,17 @@ export default function Home() {
                 href="/"
                 className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-lg hover:text-cyan-200 transition-colors duration-300"
               >
-                ✨ Fancy Text Generator
+                ✨ Vokaso
               </Link>
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center gap-3">
                 <Link
-                  href="/posts"
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-gray-500 hover:from-cyan-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+                  href="/"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
                 >
-                  Blog
+                  Font Generator
                 </Link>
-                <a
-                  href="https://github.com/SymphonyIceAttack/fancy-text-generator"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-gray-500 hover:from-orange-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
-                >
-                  GitHub
-                </a>
                 <ThemeToggle />
               </div>
 
@@ -275,88 +259,12 @@ export default function Home() {
               </div>
             </section>
 
-            {/* Showcase Images */}
-            <section className="py-12 md:py-20 px-3 sm:px-4 md:px-6 lg:px-8">
-              <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-8 md:mb-12">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 md:mb-4">
-                    ✨ See Amazing Results
-                  </h2>
-                  <p className="text-lg sm:text-xl text-white/80">
-                    Explore the endless possibilities with our text generator
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  <div className="relative rounded-2xl overflow-hidden group">
-                    <Image
-                      src="/images/unicode-text-showcase.jpg"
-                      alt="Unicode text showcase"
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4">
-                      <h3 className="text-white font-bold text-base md:text-lg">
-                        12+ Text Styles
-                      </h3>
-                      <p className="text-white/80 text-sm">
-                        Bold, italic, script & more
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="relative rounded-2xl overflow-hidden group">
-                    <Image
-                      src="/images/social-media-usage.jpg"
-                      alt="Social media usage"
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4">
-                      <h3 className="text-white font-bold text-base md:text-lg">
-                        Social Media Ready
-                      </h3>
-                      <p className="text-white/80 text-sm">
-                        Perfect for Instagram, Twitter & more
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="relative rounded-2xl overflow-hidden group sm:col-span-2 lg:col-span-1">
-                    <Image
-                      src="/images/multilingual-support.jpg"
-                      alt="Multilingual support"
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
-                    <div className="absolute bottom-3 md:bottom-4 left-3 md:left-4 right-3 md:right-4">
-                      <h3 className="text-white font-bold text-base md:text-lg">
-                        Multi-Language
-                      </h3>
-                      <p className="text-white/80 text-sm">
-                        English & Chinese supported
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="text-center mt-8 md:mt-12">
-                  <Link
-                    href="/about"
-                    className="inline-block px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-400 hover:to-pink-400 text-white font-bold text-base sm:text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
-                  >
-                    Learn More About Us
-                  </Link>
-                </div>
-              </div>
-            </section>
+            
           </div>
         </div>
 
         <SiteFooter />
+        <AffiliatePopup />
         <Toaster
           position="bottom-right"
           expand={true}

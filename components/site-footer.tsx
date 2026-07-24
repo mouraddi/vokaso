@@ -11,12 +11,11 @@ export function SiteFooter() {
               href="/"
               className="text-xl font-black tracking-tight text-white hover:text-cyan-200 transition-colors duration-300 flex items-center gap-2"
             >
-              ✨ Fancy Text Generator
+              ✨ Vokaso
             </Link>
             <p className="text-white/70 text-sm">
-              Transform your text into stylish Unicode characters with our free
-              online tool. Perfect for social media, messaging, and creative
-              projects.
+              Free online Unicode text generator. Transform your text into
+              stylish fonts for Instagram, TikTok, Twitter, and more.
             </p>
           </div>
 
@@ -30,7 +29,7 @@ export function SiteFooter() {
                 href="/"
                 className="block text-white/70 hover:text-cyan-200 text-sm transition-colors duration-300"
               >
-                Home
+                Font Generator
               </Link>
               <Link
                 href="/about"
@@ -43,12 +42,6 @@ export function SiteFooter() {
                 className="block text-white/70 hover:text-cyan-200 text-sm transition-colors duration-300"
               >
                 FAQ
-              </Link>
-              <Link
-                href="/contact"
-                className="block text-white/70 hover:text-cyan-200 text-sm transition-colors duration-300"
-              >
-                Contact
               </Link>
               <Link
                 href="/privacy"
@@ -67,7 +60,6 @@ export function SiteFooter() {
             <div className="space-y-2 text-white/70 text-sm">
               <div>12+ Text Styles</div>
               <div>Social Media Ready</div>
-              <div>Multi-Language Support</div>
               <div>Instant Copy & Paste</div>
               <div>Free to Use</div>
             </div>
@@ -93,27 +85,15 @@ export function SiteFooter() {
         <div className="mt-8 pt-6 border-t border-white/20">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-white/60 text-sm text-center md:text-left">
-              © 2025 Fancy Text Generator. Made with ❤️ for creative text
-              transformation.
+              © {new Date().getFullYear()} Vokaso. All rights reserved.
             </div>
             <div className="flex items-center gap-4 text-white/60 text-sm">
-              <a
-                href="https://fancytextgenerator.art/"
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/"
                 className="hover:text-cyan-200 transition-colors duration-300"
               >
-                Website
-              </a>
-              <span>•</span>
-              <a
-                href="https://github.com/SymphonyIceAttack/fancy-text-generator"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-cyan-200 transition-colors duration-300"
-              >
-                GitHub
-              </a>
+                Home
+              </Link>
               <span>•</span>
               <Link
                 href="/privacy"

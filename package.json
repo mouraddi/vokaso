@@ -1,8 +1,8 @@
 {
-  "name": "fancy-text-generator",
+  "name": "vokaso",
   "version": "1.0.0",
-  "private": false,
-  "description": "Transform your text into beautiful Unicode styles with our free, fast, and user-friendly online tool. Perfect for social media, messaging, and creative projects.",
+  "private": true,
+  "description": "Vokaso - Stylish Unicode Text Generator for Social Media",
   "keywords": [
     "fancy-text",
     "unicode",
@@ -17,27 +17,16 @@
     "instagram-fonts",
     "twitter-fonts",
     "stylish-text",
-    "unicode-converter",
-    "bold-text",
-    "italic-text",
-    "script-text",
-    "monospace-text",
-    "circled-text",
-    "boxed-text"
+    "vokaso"
   ],
-  "author": {
-    "name": "SymphonyIceAttack",
-    "email": "symphonyiceattack@example.com",
-    "url": "https://github.com/SymphonyIceAttack"
-  },
   "license": "MIT",
-  "homepage": "https://fancytextgenerator.art/",
+  "homepage": "https://www.vokaso.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SymphonyIceAttack/fancy-text-generator.git"
+    "url": "https://github.com/mouraddi/vokaso.git"
   },
   "bugs": {
-    "url": "https://github.com/SymphonyIceAttack/fancy-text-generator/issues"
+    "url": "https://github.com/mouraddi/vokaso/issues"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -46,11 +35,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome check",
-    "format": "biome format --write"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@directus/sdk": "^20.2.0",
+    
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-slot": "^1.2.4",
     "@vercel/analytics": "^1.6.1",
@@ -68,7 +56,7 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
+    
     "@tailwindcss/postcss": "^4.1.17",
     "@types/node": "^20.19.25",
     "@types/react": "^19.2.7",

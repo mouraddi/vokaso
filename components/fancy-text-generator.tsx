@@ -1410,7 +1410,7 @@ export function FancyTextGenerator() {
   const [showSymbolLibrary, setShowSymbolLibrary] = useState(false);
   const [selectedSymbols, setSelectedSymbols] = useState<string[]>([]);
 
-  const fullTitle = "Fancy Text Generator";
+  const fullTitle = "Vokaso";
 
   useEffect(() => {
     let currentIndex = 0;
@@ -1428,8 +1428,8 @@ export function FancyTextGenerator() {
 
   // Load data from localStorage on component mount
   useEffect(() => {
-    const savedFavorites = localStorage.getItem("fancy-text-favorites");
-    const savedRecent = localStorage.getItem("fancy-text-recent");
+    const savedFavorites = localStorage.getItem("vokaso-favorites");
+    const savedRecent = localStorage.getItem("vokaso-recent");
 
     if (savedFavorites) {
       try {
@@ -1453,7 +1453,7 @@ export function FancyTextGenerator() {
   // Save favorites to localStorage
   const saveFavorites = (favorites: Set<number>) => {
     localStorage.setItem(
-      "fancy-text-favorites",
+      "vokaso-favorites",
       JSON.stringify(Array.from(favorites)),
     );
   };

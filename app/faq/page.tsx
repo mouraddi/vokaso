@@ -89,34 +89,22 @@ export default function FAQ() {
               href="/"
               className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-lg hover:text-cyan-200 transition-colors duration-300"
             >
-              ✨ Fancy Text Generator
+              ✨ Vokaso
             </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-3">
               <Link
                 href="/"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-gray-500 hover:from-cyan-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
               >
-                Home
+                Font Generator
               </Link>
               <Link
                 href="/about"
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-gray-500 hover:from-purple-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
               >
                 About
-              </Link>
-              <Link
-                href="/contact"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-gray-500 hover:from-green-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
-              >
-                Contact
-              </Link>
-              <Link
-                href="/posts"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-gray-500 hover:from-purple-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
-              >
-                Blog
               </Link>
               <ThemeToggle />
             </div>

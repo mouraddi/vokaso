@@ -41,14 +41,3 @@ yarn-error.log*
 next-env.d.ts
 
 .crush/
-
-# Devenv
-.devenv*
-devenv.local.nix
-
-# direnv
-.direnv
-
-# pre-commit
-.pre-commit-config.yaml
-.crush.json

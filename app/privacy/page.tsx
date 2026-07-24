@@ -24,16 +24,16 @@ export default function PrivacyPolicy() {
               href="/"
               className="text-xl sm:text-2xl font-black tracking-tight text-white drop-shadow-lg hover:text-cyan-200 transition-colors duration-300"
             >
-              ✨ Fancy Text Generator
+              ✨ Vokaso
             </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-3">
               <Link
                 href="/"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-gray-500 hover:from-cyan-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
               >
-                Home
+                Font Generator
               </Link>
               <Link
                 href="/about"
@@ -46,12 +46,6 @@ export default function PrivacyPolicy() {
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-gray-500 hover:from-pink-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
               >
                 FAQ
-              </Link>
-              <Link
-                href="/contact"
-                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-gray-500 hover:from-green-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
-              >
-                Contact
               </Link>
               <Link
                 href="/privacy"
@@ -98,7 +92,7 @@ export default function PrivacyPolicy() {
                     🛡️ Our Privacy Commitment
                   </h2>
                   <p className="text-white/90 text-lg leading-relaxed mb-4">
-                    At Fancy Text Generator, we are committed to protecting your
+                    At Vokaso, we are committed to protecting your
                     privacy and being transparent about how we handle your
                     information. This Privacy Policy explains our practices
                     regarding data collection, usage, and protection.

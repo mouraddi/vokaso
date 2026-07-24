@@ -1,6 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import type React from "react";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
@@ -18,13 +19,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || ""),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.vokaso.com"),
   title: {
-    default: "Fancy Text Generator - Unicode Text Styles Online",
-    template: "%s | Fancy Text Generator",
+    default: "Vokaso - Stylish Text Generator for Social Media",
+    template: "%s | Vokaso",
   },
   description:
-    "Create stylish Unicode text with 12+ unique styles. Perfect for social media, messaging, and creative projects. Free online text converter with instant copy functionality.",
+    "Generate stylish Unicode text for Instagram, TikTok, Facebook, Twitter & more. 12+ font styles to make your social media bios and posts stand out. Free online tool.",
   keywords: [
     "fancy text",
     "unicode text",
@@ -32,52 +33,32 @@ export const metadata: Metadata = {
     "font generator copy and paste",
     "stylish text",
     "text converter",
-    "unicode converter",
     "instagram fonts",
     "facebook text",
     "twitter fonts",
     "text styles",
-    "glitch text",
-    "script text",
     "bold text",
     "italic text",
     "monospace text",
-    "circled text",
-    "boxed text",
-    "mathematical text",
-    "fraktur text",
-    "double struck text",
+    "vokaso",
   ],
-  authors: [{ name: "SymphonyIceAttack" }],
-  creator: "SymphonyIceAttack",
-  publisher: "SymphonyIceAttack",
   formatDetection: {
     telephone: false,
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: process.env.NEXT_PUBLIC_SITE_URL,
-    title: "Fancy Text Generator - Unicode Text Styles Online",
+    url: "https://www.vokaso.com",
+    title: "Vokaso - Stylish Text Generator for Social Media",
     description:
-      "Create stylish Unicode text with 12+ unique styles. Perfect for social media, messaging, and creative projects. Free online text converter.",
-    siteName: "Fancy Text Generator",
-    images: [
-      {
-        url: "/images/unicode-text-showcase.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Fancy Text Generator - Unicode Text Styles Showcase",
-      },
-    ],
+      "Generate stylish Unicode text for Instagram, TikTok, Facebook, Twitter & more. 12+ font styles free online.",
+    siteName: "Vokaso",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fancy Text Generator - Unicode Text Styles Online",
+    title: "Vokaso - Stylish Text Generator for Social Media",
     description:
-      "Create stylish Unicode text with 12+ unique styles. Perfect for social media and messaging. Free online text converter with copy & paste.",
-    creator: "@SymphonyIceAttack",
-    images: ["/images/unicode-text-showcase.jpg"],
+      "Generate stylish Unicode text for Instagram, TikTok, Facebook, Twitter & more. 12+ font styles free online.",
   },
   robots: {
     index: true,
@@ -91,9 +72,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: process.env.NEXT_PUBLIC_SITE_URL,
+    canonical: "https://www.vokaso.com",
     languages: {
-      en: process.env.NEXT_PUBLIC_SITE_URL,
+      en: "https://www.vokaso.com",
     },
   },
   icons: {
@@ -142,6 +123,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="msvalidate.01" content="6D6D7CC718446719C37E143DA778C820" />
+        <meta name="yandex-verification" content="b12f9805ac9114aa" />
+        <Script id="clarity" strategy="afterInteractive">
+          {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","xmpiwcf7m3");`}
+        </Script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
