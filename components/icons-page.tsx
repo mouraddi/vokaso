@@ -25,21 +25,34 @@ export function IconsPage() {
   const [loading, setLoading] = useState(true);
   const [fetchingSvg, setFetchingSvg] = useState(false);
   const [selectedSvg, setSelectedSvg] = useState("");
+  const [spriteReady, setSpriteReady] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
+  const spriteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
-    fetch("https://cdn.jsdelivr.net/npm/lucide-static@latest/tags.json")
-      .then((r) => r.json())
-      .then((data) => {
+
+    Promise.all([
+      fetch("https://cdn.jsdelivr.net/npm/lucide-static@latest/tags.json").then((r) => r.json()),
+      fetch(SPRITE_URL).then((r) => r.text()),
+    ])
+      .then(([tagsData, spriteText]) => {
         if (cancelled) return;
-        const names = Object.keys(data as Record<string, unknown>).sort();
+        const names = Object.keys(tagsData as Record<string, unknown>).sort();
         setIcons(names.map((n) => ({ name: n, pascal: toPascalCase(n) })));
         setLoading(false);
+
+        if (spriteRef.current) {
+          spriteRef.current.innerHTML = spriteText
+            .replace('<?xml version="1.0" encoding="utf-8"?>', "")
+            .replace('xmlns="http://www.w3.org/2000/svg"', 'xmlns="http://www.w3.org/2000/svg" style="display:none"');
+          setSpriteReady(true);
+        }
       })
       .catch(() => {
-        if (!cancelled) { setLoading(false); }
+        if (!cancelled) setLoading(false);
       });
+
     return () => { cancelled = true; };
   }, []);
 
@@ -118,6 +131,8 @@ export function IconsPage() {
 
   return (
     <div className="py-8 md:py-16 px-3 sm:px-4 lg:px-8">
+      <div ref={spriteRef} />
+
       <div className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-black text-white mb-2">🎨 Lucide Icons</h1>
         <p className="text-base text-white/70">Beautiful open-source icons. Click any icon to copy SVG, JSX, or download.</p>
@@ -164,7 +179,7 @@ export function IconsPage() {
                   title={ico.pascal}
                 >
                   <svg className="w-5 h-5 text-white pointer-events-none">
-                    <use href={`${SPRITE_URL}#${ico.name}`} />
+                    <use href={`#${ico.name}`} />
                   </svg>
                   <span className="text-[9px] text-white/50 truncate w-full text-center leading-tight">{ico.pascal}</span>
                 </button>
@@ -188,7 +203,7 @@ export function IconsPage() {
                 <span className="w-8 h-8 text-cyan-400 [&>svg]:w-8 [&>svg]:h-8" dangerouslySetInnerHTML={{ __html: selectedSvg }} />
               ) : (
                 <svg className="w-8 h-8 text-cyan-400">
-                  <use href={`${SPRITE_URL}#${selectedIcon}`} />
+                  <use href={`#${selectedIcon}`} />
                 </svg>
               )}
               <div className="min-w-0">
