@@ -39,6 +39,10 @@ const categories = [
   { name: "Status", icons: ["AlertCircle","Info","HelpCircle","CheckCircle","XCircle","Sun","Moon","Cloud","Calendar","Clock","MapPin","Compass"] },
 ];
 
+function toKebabCase(name: string): string {
+  return name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+}
+
 const LUCIDE_CDN = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons";
 
 export function IconsPage() {
@@ -61,7 +65,7 @@ export function IconsPage() {
 
   const fetchSvg = async (name: string): Promise<string> => {
     try {
-      const res = await fetch(`${LUCIDE_CDN}/${name}.svg`);
+      const res = await fetch(`${LUCIDE_CDN}/${toKebabCase(name)}.svg`);
       if (!res.ok) throw new Error("Not found");
       return await res.text();
     } catch {
