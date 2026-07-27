@@ -15,6 +15,18 @@ const CDN = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons";
 interface IconData {
   name: string;
   pascal: string;
+  svg: string;
+}
+
+function extractSvgFromSprite(spriteText: string): Record<string, string> {
+  const map: Record<string, string> = {};
+  const symbolRegex = /<symbol\s+id="([^"]+)"[^>]*viewBox="([^"]*)"[^>]*>([\s\S]*?)<\/symbol>/g;
+  let match;
+  while ((match = symbolRegex.exec(spriteText)) !== null) {
+    const [, id, viewBox, inner] = match;
+    map[id] = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+  }
+  return map;
 }
 
 export function IconsPage() {
@@ -23,11 +35,7 @@ export function IconsPage() {
   const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
   const [icons, setIcons] = useState<IconData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [fetchingSvg, setFetchingSvg] = useState(false);
-  const [selectedSvg, setSelectedSvg] = useState("");
-  const [spriteReady, setSpriteReady] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
-  const spriteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -39,14 +47,15 @@ export function IconsPage() {
       .then(([tagsData, spriteText]) => {
         if (cancelled) return;
         const names = Object.keys(tagsData as Record<string, unknown>).sort();
-        setIcons(names.map((n) => ({ name: n, pascal: toPascalCase(n) })));
+        const svgMap = extractSvgFromSprite(spriteText);
+        setIcons(
+          names.map((n) => ({
+            name: n,
+            pascal: toPascalCase(n),
+            svg: svgMap[n] || "",
+          }))
+        );
         setLoading(false);
-
-        if (spriteRef.current) {
-          spriteRef.current.innerHTML = spriteText
-            .replace('<?xml version="1.0" encoding="utf-8"?>', "");
-          setSpriteReady(true);
-        }
       })
       .catch(() => {
         if (!cancelled) setLoading(false);
@@ -78,22 +87,20 @@ export function IconsPage() {
     toast.success("JSX code copied!");
   };
 
-  const copySvgCode = async (kebab: string) => {
-    const svg = await fetch(`${CDN}/${kebab}.svg`).then((r) => r.text());
+  const copySvgCode = (svg: string) => {
     navigator.clipboard.writeText(svg);
     toast.success("SVG code copied!");
   };
 
-  const downloadSvg = async (kebab: string) => {
-    const svg = await fetch(`${CDN}/${kebab}.svg`).then((r) => r.text());
-    const blob = new Blob([svg], { type: "image/svg+xml" });
+  const downloadSvg = (ico: IconData) => {
+    const blob = new Blob([ico.svg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${kebab}.svg`;
+    a.download = `${ico.name}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${kebab}.svg downloaded!`);
+    toast.success(`${ico.name}.svg downloaded!`);
   };
 
   const copyName = (text: string) => {
@@ -101,23 +108,15 @@ export function IconsPage() {
     toast.success("Copied!");
   };
 
-  const handleIconClick = useCallback(async (name: string, e: React.MouseEvent) => {
+  const handleIconClick = useCallback((name: string, e: React.MouseEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     setSelectedIcon(name);
     setPopupPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
-    setFetchingSvg(true);
-    setSelectedSvg("");
-    try {
-      const svg = await fetch(`${CDN}/${name}.svg`).then((r) => r.text());
-      setSelectedSvg(svg);
-    } catch { /* ignore */ }
-    setFetchingSvg(false);
   }, []);
 
   const closePopup = () => {
     setSelectedIcon(null);
     setPopupPos(null);
-    setSelectedSvg("");
   };
 
   const filtered = useMemo(() => {
@@ -130,8 +129,6 @@ export function IconsPage() {
 
   return (
     <div className="py-8 md:py-16 px-3 sm:px-4 lg:px-8">
-      <div ref={spriteRef} style={{ display: "none" }} />
-
       <div className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-black text-white mb-2">🎨 Lucide Icons</h1>
         <p className="text-base text-white/70">Beautiful open-source icons. Click any icon to copy SVG, JSX, or download.</p>
@@ -177,9 +174,7 @@ export function IconsPage() {
                   )}
                   title={ico.pascal}
                 >
-                  <svg className="w-5 h-5 text-white pointer-events-none">
-                    <use href={`#${ico.name}`} />
-                  </svg>
+                  <span className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:text-white" dangerouslySetInnerHTML={{ __html: ico.svg }} />
                   <span className="text-[9px] text-white/50 truncate w-full text-center leading-tight">{ico.pascal}</span>
                 </button>
               ))}
@@ -196,14 +191,8 @@ export function IconsPage() {
         >
           <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-5 shadow-2xl border border-gray-700 min-w-[220px]">
             <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-700">
-              {fetchingSvg ? (
-                <div className="w-8 h-8 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
-              ) : selectedSvg ? (
-                <span className="w-8 h-8 text-cyan-400 [&>svg]:w-8 [&>svg]:h-8" dangerouslySetInnerHTML={{ __html: selectedSvg }} />
-              ) : (
-                <svg className="w-8 h-8 text-cyan-400">
-                  <use href={`#${selectedIcon}`} />
-                </svg>
+              {selected.svg && (
+                <span className="w-8 h-8 text-cyan-400 [&>svg]:w-8 [&>svg]:h-8" dangerouslySetInnerHTML={{ __html: selected.svg }} />
               )}
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white truncate">{selected.pascal}</p>
@@ -212,7 +201,7 @@ export function IconsPage() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <button onClick={() => copySvgCode(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+              <button onClick={() => copySvgCode(selected.svg)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 <span>Copy SVG</span>
               </button>
@@ -220,7 +209,7 @@ export function IconsPage() {
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 <span>Copy JSX</span>
               </button>
-              <button onClick={() => downloadSvg(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+              <button onClick={() => downloadSvg(selected)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <Download className="w-4 h-4" />
                 <span>Download SVG</span>
               </button>
