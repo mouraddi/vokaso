@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { textStyles } from "@/components/fancy-text-generator";
+import { textStyles } from "@/lib/font-styles";
 
 interface Props {
   slug: string;

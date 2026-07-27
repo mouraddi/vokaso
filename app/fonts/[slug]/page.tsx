@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FontPageClient } from "./client";
-import { textStyles } from "@/components/fancy-text-generator";
+import { textStyles } from "@/lib/font-styles";
 
 export function generateStaticParams() {
   return textStyles.map((s) => ({

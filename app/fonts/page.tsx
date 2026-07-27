@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { textStyles } from "@/components/fancy-text-generator";
+import { textStyles } from "@/lib/font-styles";
 
 export const metadata = {
   title: "All Font Styles - Fancy Unicode Text Generator",
@@ -21,10 +21,6 @@ const styleEmojis: Record<string, string> = {
   "sub script": "ₜₑₓₜ", "musical notes": "♫", "hearts & stars": "♥★",
 };
 
-function slugify(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-}
-
 export default function FontsIndex() {
   return (
     <div className="min-h-screen py-10 md:py-20 px-3 sm:px-4 lg:px-8">
@@ -40,12 +36,11 @@ export default function FontsIndex() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {textStyles.map((s) => {
-            const slug = slugify(s.name);
             const emoji = styleEmojis[s.name.toLowerCase()] || "✨";
             return (
               <Link
                 key={s.name}
-                href={`/fonts/${slug}`}
+                href={`/fonts/${s.slug}`}
                 className="group p-5 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 hover:border-cyan-400/50 transition-all"
               >
                 <div className="text-3xl mb-3">{emoji}</div>
