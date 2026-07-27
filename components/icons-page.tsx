@@ -28,10 +28,10 @@ export function IconsPage() {
   const iconNamesRef = useRef<string[]>([]);
 
   useEffect(() => {
-    fetch(`${LUCIDE_CDN}/../icons.json`)
+    fetch("https://cdn.jsdelivr.net/npm/lucide-static@latest/tags/tags.json")
       .then((r) => r.json())
       .then((data) => {
-        const names = (data as string[]).filter((n) => n.endsWith(".svg")).map((n) => n.replace(".svg", ""));
+        const names = Object.keys(data as Record<string, unknown>).sort();
         iconNamesRef.current = names;
         loadBatch(names, 0, 50);
       })
@@ -44,11 +44,11 @@ export function IconsPage() {
     const batch = names.slice(start, start + batchSize);
     if (batch.length === 0) { setLoading(false); return; }
     const results = await Promise.allSettled(
-      batch.map(async (name) => {
-        const res = await fetch(`${LUCIDE_CDN}/${name}.svg`);
-        if (!res.ok) throw new Error(name);
+      batch.map(async (pascal) => {
+        const kebab = toKebabCase(pascal);
+        const res = await fetch(`${LUCIDE_CDN}/${kebab}.svg`);
+        if (!res.ok) throw new Error(pascal);
         const svg = await res.text();
-        const pascal = name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join("");
         return { name: pascal, svg } as IconData;
       })
     );
