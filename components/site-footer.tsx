@@ -32,6 +32,18 @@ export function SiteFooter() {
                 Font Generator
               </Link>
               <Link
+                href="/icons"
+                className="block text-white/70 hover:text-cyan-200 text-sm transition-colors duration-300"
+              >
+                Icons
+              </Link>
+              <Link
+                href="/symbols"
+                className="block text-white/70 hover:text-cyan-200 text-sm transition-colors duration-300"
+              >
+                Symbols
+              </Link>
+              <Link
                 href="/about"
                 className="block text-white/70 hover:text-cyan-200 text-sm transition-colors duration-300"
               >
@@ -93,6 +105,20 @@ export function SiteFooter() {
                 className="hover:text-cyan-200 transition-colors duration-300"
               >
                 Home
+              </Link>
+              <span>•</span>
+              <Link
+                href="/icons"
+                className="hover:text-cyan-200 transition-colors duration-300"
+              >
+                Icons
+              </Link>
+              <span>•</span>
+              <Link
+                href="/symbols"
+                className="hover:text-cyan-200 transition-colors duration-300"
+              >
+                Symbols
               </Link>
               <span>•</span>
               <Link
