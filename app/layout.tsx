@@ -129,6 +129,7 @@ export default function RootLayout({
         <Script id="clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","xmpiwcf7m3");`}
         </Script>
+        <Script id="adsterra" strategy="afterInteractive" src="https://pl30552676.effectivecpmnetwork.com/7c/d5/b3/7cd5b37974d153a5a010059b1663b140.js" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
