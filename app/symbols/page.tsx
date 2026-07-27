@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Toaster } from "sonner";
 import { MobileMenu } from "@/components/mobile-menu";
+import { SiteFooter } from "@/components/site-footer";
 import { SymbolsPage } from "@/components/symbols-page";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -58,6 +59,8 @@ export default function Symbols() {
         <div className="bg-white/10 .dark:bg-black/20 backdrop-blur-xl min-h-screen">
           <SymbolsPage />
         </div>
+
+        <SiteFooter />
       </div>
 
       <Toaster position="bottom-right" expand richColors closeButton theme="dark" />
