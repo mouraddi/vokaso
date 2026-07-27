@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Toaster } from "sonner";
-import { AffiliatePopup } from "@/components/affiliate-popup";
 import { FancyTextGenerator } from "@/components/fancy-text-generator";
 import { MobileMenu } from "@/components/mobile-menu";
 import { SiteFooter } from "@/components/site-footer";
@@ -276,8 +275,7 @@ export default function Home() {
         </div>
 
         <SiteFooter />
-        <AffiliatePopup />
-        <Toaster
+          <Toaster
           position="bottom-right"
           expand={true}
           richColors
