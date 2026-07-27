@@ -114,20 +114,27 @@ export function IconsPage() {
       const Icon = icons[name];
       if (!Icon) return null;
       return (
-        <button
+        <div
           key={name}
-          onClick={() => setSelectedIcon(name)}
           className={cn(
-            "flex flex-col items-center gap-1 p-3 rounded-xl transition-all",
+            "flex flex-col items-center gap-1 p-3 rounded-xl transition-all border",
             selectedIcon === name
-              ? "bg-cyan-500/20 border border-cyan-400"
-              : "bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-400/50",
+              ? "bg-cyan-500/20 border-cyan-400"
+              : "bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50",
           )}
-          title={name}
         >
-          <Icon className="w-6 h-6 text-white" />
-          <span className="text-[10px] text-white/60 truncate w-full text-center">{name}</span>
-        </button>
+          <button onClick={() => setSelectedIcon(name)} className="flex flex-col items-center gap-1 w-full" title={name}>
+            <Icon className="w-6 h-6 text-white" />
+            <span className="text-[10px] text-white/60 truncate w-full text-center">{name}</span>
+          </button>
+          <button
+            onClick={() => downloadSvg(name)}
+            className="text-white/30 hover:text-cyan-300 transition-colors"
+            title="Download SVG"
+          >
+            <Download className="w-3 h-3" />
+          </button>
+        </div>
       );
     });
 
