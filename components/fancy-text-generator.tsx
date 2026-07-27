@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
-const charMaps = {
+export const charMaps = {
   bold: {
     A: "𝗔",
     B: "𝗕",
@@ -1107,15 +1107,15 @@ export const symbolLibraries: SymbolLibrary[] = [
   },
 ];
 
-function reverseText(text: string): string {
+export function reverseText(text: string): string {
   return text.split("").reverse().join("");
 }
 
-function wideText(text: string): string {
+export function wideText(text: string): string {
   return text.split("").join(" ");
 }
 
-interface TextStyle {
+export interface TextStyle {
   name: string;
   transform: (text: string) => string;
   description: string;
@@ -1124,7 +1124,7 @@ interface TextStyle {
 }
 
 // Helper function to check if character is Chinese
-function isChinese(char: string): boolean {
+export function isChinese(char: string): boolean {
   const code = char.charCodeAt(0);
   return (
     (code >= 0x4e00 && code <= 0x9fff) ||
@@ -1133,7 +1133,7 @@ function isChinese(char: string): boolean {
   );
 }
 
-function transformTextWithChineseCheck(
+export function transformTextWithChineseCheck(
   text: string,
   mapName: keyof typeof charMaps,
 ): string {
@@ -1147,7 +1147,7 @@ function transformTextWithChineseCheck(
     .join("");
 }
 
-function upsideDownTextWithChineseCheck(text: string): string {
+export function upsideDownTextWithChineseCheck(text: string): string {
   const flipMap: Record<string, string> = {
     a: "ɐ",
     b: "q",
@@ -1228,7 +1228,7 @@ function upsideDownTextWithChineseCheck(text: string): string {
     .join("");
 }
 
-const textStyles: TextStyle[] = [
+export const textStyles: TextStyle[] = [
   {
     name: "Bold Text",
     transform: (text) => transformTextWithChineseCheck(text, "bold"),
