@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Copy, Download, Search, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -49,7 +49,9 @@ export function IconsPage() {
   const [search, setSearch] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
   const [icons, setIcons] = useState<Record<string, React.ComponentType<{ className?: string }>>>({});
+  const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     import("lucide-react").then((mod: unknown) => {
@@ -62,6 +64,18 @@ export function IconsPage() {
       setIcons(allIcons);
     });
   }, []);
+
+  useEffect(() => {
+    if (!popupPos) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node)) {
+        setSelectedIcon(null);
+        setPopupPos(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [popupPos]);
 
   const fetchSvg = async (name: string): Promise<string> => {
     try {
@@ -103,6 +117,12 @@ export function IconsPage() {
     toast.success(`${name}.svg downloaded!`);
   };
 
+  const handleIconClick = useCallback((name: string, e: React.MouseEvent) => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    setSelectedIcon(name);
+    setPopupPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     if (!q) return iconList;
@@ -114,27 +134,20 @@ export function IconsPage() {
       const Icon = icons[name];
       if (!Icon) return null;
       return (
-        <div
+        <button
           key={name}
+          onClick={(e) => handleIconClick(name, e)}
           className={cn(
-            "flex flex-col items-center gap-1 p-3 rounded-xl transition-all border",
+            "flex flex-col items-center gap-1 p-3 rounded-xl transition-all relative",
             selectedIcon === name
-              ? "bg-cyan-500/20 border-cyan-400"
-              : "bg-white/10 hover:bg-white/20 border-white/20 hover:border-cyan-400/50",
+              ? "bg-cyan-500/20 border border-cyan-400"
+              : "bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-400/50",
           )}
+          title={name}
         >
-          <button onClick={() => setSelectedIcon(name)} className="flex flex-col items-center gap-1 w-full" title={name}>
-            <Icon className="w-6 h-6 text-white" />
-            <span className="text-[10px] text-white/60 truncate w-full text-center">{name}</span>
-          </button>
-          <button
-            onClick={() => downloadSvg(name)}
-            className="text-white/30 hover:text-cyan-300 transition-colors"
-            title="Download SVG"
-          >
-            <Download className="w-3 h-3" />
-          </button>
-        </div>
+          <Icon className="w-6 h-6 text-white" />
+          <span className="text-[10px] text-white/60 truncate w-full text-center">{name}</span>
+        </button>
       );
     });
 
@@ -147,7 +160,7 @@ export function IconsPage() {
           🎨 Lucide Icons
         </h1>
         <p className="text-lg text-white/80 max-w-2xl mx-auto">
-          Browse, search, copy SVG/React code, and download Lucide icons
+          Click any icon to copy or download
         </p>
       </div>
 
@@ -191,41 +204,34 @@ export function IconsPage() {
         </div>
       )}
 
-      {selectedIcon && SelectedIcon && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedIcon(null)}>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-xs mx-4 text-center shadow-2xl border" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-center mb-3">
-              <SelectedIcon className="w-12 h-12 text-cyan-400" />
+      {selectedIcon && SelectedIcon && popupPos && (
+        <div
+          ref={popupRef}
+          style={{ top: popupPos.top, left: popupPos.left }}
+          className="fixed z-50 -translate-x-1/2"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-2xl border border-gray-200 dark:border-gray-700 min-w-[180px]">
+            <div className="flex items-center gap-3 mb-3">
+              <SelectedIcon className="w-8 h-8 text-cyan-400 shrink-0" />
+              <span className="font-semibold text-sm text-gray-900 dark:text-white truncate">{selectedIcon}</span>
             </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{selectedIcon}</h2>
-            <div className="flex flex-col gap-2">
-              <Button onClick={() => copySvgCode(selectedIcon)} className="bg-cyan-500 hover:bg-cyan-400 text-white w-full text-sm">
-                {copied === selectedIcon ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+            <div className="flex flex-col gap-1.5">
+              <button onClick={() => copySvgCode(selectedIcon)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left">
+                {copied === selectedIcon ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                 Copy SVG
-              </Button>
-              <Button onClick={() => copyReact(selectedIcon)} variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full text-sm">
-                Copy React Code
-              </Button>
-              <Button onClick={() => downloadSvg(selectedIcon)} variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full text-sm">
-                <Download className="w-4 h-4 mr-2" />
+              </button>
+              <button onClick={() => copyReact(selectedIcon)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left">
+                <Copy className="w-4 h-4" />
+                Copy React
+              </button>
+              <button onClick={() => downloadSvg(selectedIcon)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left">
+                <Download className="w-4 h-4" />
                 Download SVG
-              </Button>
+              </button>
             </div>
-            <button onClick={() => setSelectedIcon(null)} className="mt-4 text-xs text-white/40 hover:text-white/60">
-              Close
-            </button>
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-function Code2Icon({ className }: { className?: string }) {
-  return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
-    </svg>
   );
 }
