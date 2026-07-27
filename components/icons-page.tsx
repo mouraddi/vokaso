@@ -3,41 +3,11 @@
 import { Check, Copy, Download, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const iconList = [
-  "Heart", "Star", "Home", "User", "Settings", "Bell", "Mail", "Search",
-  "Camera", "Image", "Music", "Play", "Globe", "Lock", "Unlock", "Sun",
-  "Moon", "Cloud", "Download", "Upload", "Trash2", "Edit", "Share2",
-  "MessageCircle", "Phone", "MapPin", "Calendar", "Clock", "Eye", "EyeOff",
-  "ThumbsUp", "MessageSquare", "ShoppingCart", "Bookmark", "Flag", "Award",
-  "Zap", "Fire", "AlertCircle", "CheckCircle", "XCircle", "Info", "HelpCircle",
-  "Link", "Paperclip", "AtSign", "Hash", "Bold", "Italic", "Underline", "Type",
-  "List", "CheckSquare", "Square", "Circle", "ArrowRight", "ArrowLeft",
-  "ArrowUp", "ArrowDown", "ChevronRight", "ChevronLeft", "ChevronUp",
-  "ChevronDown", "Menu", "MoreHorizontal", "MoreVertical", "Plus", "Minus",
-  "X", "ExternalLink", "Copy", "Clipboard", "FileText", "Folder", "Tag",
-  "CreditCard", "DollarSign", "TrendingUp", "BarChart3", "PieChart", "Activity",
-  "RefreshCw", "Repeat", "Shuffle", "Volume2", "Send", "Inbox", "LogIn",
-  "LogOut", "UserPlus", "UserCheck", "Users", "Filter", "Grid3x3", "Columns",
-  "Rows", "Palette", "Brush", "PenTool", "Code2", "Terminal", "Database",
-  "Server", "Cpu", "Wifi", "Smartphone", "Tablet", "Monitor", "Printer",
-  "Compass", "BookOpen", "Feather", "Gift", "Gem", "Rocket", "Trophy",
-  "Medal", "Target",
-];
-
-const categories = [
-  { name: "Actions", icons: ["Search","Download","Upload","Trash2","Edit","Share2","Copy","Send","LogIn","LogOut","RefreshCw","Repeat","Shuffle","Filter","Plus","Minus","X","CheckCircle","XCircle"] },
-  { name: "Communication", icons: ["Mail","MessageCircle","MessageSquare","Phone","AtSign","Bell","Inbox"] },
-  { name: "Media", icons: ["Camera","Image","Music","Play","Volume2","Eye","EyeOff"] },
-  { name: "Navigation", icons: ["ArrowRight","ArrowLeft","ArrowUp","ArrowDown","ChevronRight","ChevronLeft","ChevronUp","ChevronDown","Menu","MoreHorizontal","MoreVertical","ExternalLink","Home"] },
-  { name: "Interface", icons: ["Heart","Star","Bookmark","Flag","Award","Zap","Fire","ThumbsUp","Settings","Lock","Unlock","User","Users","UserPlus","UserCheck"] },
-  { name: "Design", icons: ["Palette","Brush","PenTool","Bold","Italic","Underline","Type","List","Grid3x3","Columns","Rows","Feather"] },
-  { name: "Development", icons: ["Code2","Terminal","Database","Server","Cpu","Wifi","Globe","Hash","Link","Paperclip","Tag"] },
-  { name: "Commerce", icons: ["ShoppingCart","CreditCard","DollarSign","TrendingUp","BarChart3","PieChart","Activity","Tag","Gift","Gem"] },
-  { name: "Status", icons: ["AlertCircle","Info","HelpCircle","CheckCircle","XCircle","Sun","Moon","Cloud","Calendar","Clock","MapPin","Compass"] },
-];
+const EXCLUDE_ICONS = new Set([
+  "createLucideIcon", "default", "icons", "Icon", "LucideIcon", "LucideProps",
+]);
 
 function toKebabCase(name: string): string {
   return name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
@@ -50,18 +20,23 @@ export function IconsPage() {
   const [copied, setCopied] = useState<string | null>(null);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [popupPos, setPopupPos] = useState<{ top: number; left: number } | null>(null);
-  const [icons, setIcons] = useState<Record<string, React.ComponentType<{ className?: string }>>>({});
+  const [allIcons, setAllIcons] = useState<string[]>([]);
+  const [iconComponents, setIconComponents] = useState<Record<string, React.ComponentType<{ className?: string }>>>({});
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     import("lucide-react").then((mod: unknown) => {
-      const iconsMap = mod as Record<string, React.ComponentType<{ className?: string }>>;
-      const allIcons = iconList.reduce((acc, name) => {
-        const Icon = iconsMap[name];
-        if (Icon) acc[name] = Icon;
-        return acc;
-      }, {} as Record<string, React.ComponentType<{ className?: string }>>);
-      setIcons(allIcons);
+      const iconsMap = mod as Record<string, unknown>;
+      const names = Object.keys(iconsMap).filter(
+        (name) => /^[A-Z]/.test(name) && !EXCLUDE_ICONS.has(name) && typeof iconsMap[name] === "function"
+      ).sort();
+      setAllIcons(names);
+
+      const comps: Record<string, React.ComponentType<{ className?: string }>> = {};
+      for (const name of names) {
+        comps[name] = iconsMap[name] as React.ComponentType<{ className?: string }>;
+      }
+      setIconComponents(comps);
     });
   }, []);
 
@@ -73,8 +48,13 @@ export function IconsPage() {
         setPopupPos(null);
       }
     };
+    const handleScroll = () => { setSelectedIcon(null); setPopupPos(null); };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("scroll", handleScroll, true);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", handleScroll, true);
+    };
   }, [popupPos]);
 
   const fetchSvg = async (name: string): Promise<string> => {
@@ -125,84 +105,73 @@ export function IconsPage() {
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    if (!q) return iconList;
-    return iconList.filter((name) => name.toLowerCase().includes(q));
-  }, [search]);
-
-  const renderGrid = (names: string[]) =>
-    names.map((name) => {
-      const Icon = icons[name];
-      if (!Icon) return null;
-      return (
-        <button
-          key={name}
-          onClick={(e) => handleIconClick(name, e)}
-          className={cn(
-            "flex flex-col items-center gap-1 p-3 rounded-xl transition-all relative",
-            selectedIcon === name
-              ? "bg-cyan-500/20 border border-cyan-400"
-              : "bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-400/50",
-          )}
-          title={name}
-        >
-          <Icon className="w-6 h-6 text-white" />
-          <span className="text-[10px] text-white/60 truncate w-full text-center">{name}</span>
-        </button>
-      );
+    if (!q) return allIcons;
+    return allIcons.filter((name) => {
+      const kebab = toKebabCase(name);
+      return name.toLowerCase().includes(q) || kebab.includes(q);
     });
+  }, [search, allIcons]);
 
-  const SelectedIcon = selectedIcon && icons[selectedIcon] ? icons[selectedIcon] : null;
+  const SelectedIcon = selectedIcon && iconComponents[selectedIcon] ? iconComponents[selectedIcon] : null;
 
   return (
     <div className="py-8 md:py-16 px-3 sm:px-4 lg:px-8">
-      <div className="text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
-          🎨 Lucide Icons
-        </h1>
-        <p className="text-lg text-white/80 max-w-2xl mx-auto">
-          Click any icon to copy or download
-        </p>
+      <div className="text-center mb-8">
+        <h1 className="text-4xl md:text-5xl font-black text-white mb-2">🎨 Lucide Icons</h1>
+        <p className="text-base text-white/70">Click any icon to copy SVG, React code, or download</p>
       </div>
 
-      <div className="max-w-6xl mx-auto mb-8">
+      <div className="max-w-6xl mx-auto mb-6">
         <div className="relative max-w-md mx-auto">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search icons..."
-            className="w-full pl-12 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-cyan-400/50 backdrop-blur-sm"
+            placeholder={`Search ${filtered.length} icons...`}
+            className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white text-sm placeholder-white/40 focus:outline-none focus:border-cyan-400/50"
           />
           {search && (
-            <button onClick={() => setSearch("")} className="absolute right-4 top-1/2 -translate-y-1/2">
+            <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2">
               <X className="w-4 h-4 text-white/40 hover:text-white" />
             </button>
           )}
         </div>
       </div>
 
-      {search && (
-        <div className="max-w-6xl mx-auto">
-          <p className="text-white/60 mb-4">{filtered.length} icons found</p>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-            {renderGrid(filtered)}
-          </div>
-        </div>
-      )}
-
-      {!search && (
-        <div className="max-w-6xl mx-auto space-y-10">
-          {categories.map((cat) => (
-            <div key={cat.name}>
-              <h2 className="text-xl font-bold text-white mb-4">{cat.name}</h2>
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
-                {renderGrid(cat.icons)}
-              </div>
+      <div className="max-w-6xl mx-auto">
+        {allIcons.length === 0 ? (
+          <p className="text-white/40 text-center">Loading icons...</p>
+        ) : (
+          <>
+            {search && (
+              <p className="text-white/50 text-sm mb-3">{filtered.length} of {allIcons.length} icons</p>
+            )}
+            <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 xl:grid-cols-14 gap-1.5">
+              {filtered.map((name) => {
+                const Icon = iconComponents[name];
+                if (!Icon) return null;
+                return (
+                  <button
+                    key={name}
+                    onClick={(e) => handleIconClick(name, e)}
+                    className={cn(
+                      "flex flex-col items-center gap-0.5 p-2 rounded-lg transition-all",
+                      selectedIcon === name
+                        ? "bg-cyan-500/20 ring-1 ring-cyan-400"
+                        : "bg-white/5 hover:bg-white/15 ring-0 hover:ring-1 ring-white/20",
+                    )}
+                    title={name}
+                  >
+                    <Icon className="w-5 h-5 text-white" />
+                    <span className="text-[9px] text-white/50 truncate w-full text-center leading-tight">{name}</span>
+                  </button>
+                );
+              })}
             </div>
-          ))}
-        </div>
-      )}
+          </>
+        )}
+      </div>
 
       {selectedIcon && SelectedIcon && popupPos && (
         <div
@@ -210,28 +179,49 @@ export function IconsPage() {
           style={{ top: popupPos.top, left: popupPos.left }}
           className="fixed z-50 -translate-x-1/2"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-2xl border border-gray-200 dark:border-gray-700 min-w-[180px]">
-            <div className="flex items-center gap-3 mb-3">
+          <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-5 shadow-2xl border border-gray-700 min-w-[200px]">
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-700">
               <SelectedIcon className="w-8 h-8 text-cyan-400 shrink-0" />
-              <span className="font-semibold text-sm text-gray-900 dark:text-white truncate">{selectedIcon}</span>
+              <div>
+                <p className="text-sm font-semibold text-white">{selectedIcon}</p>
+                <p className="text-[10px] text-gray-400">{toKebabCase(selectedIcon)}.svg</p>
+              </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <button onClick={() => copySvgCode(selectedIcon)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left">
-                {copied === selectedIcon ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                Copy SVG
+            <div className="flex flex-col gap-1">
+              <button
+                onClick={() => copySvgCode(selectedIcon)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
+              >
+                {copied === selectedIcon ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                <span>Copy SVG</span>
               </button>
-              <button onClick={() => copyReact(selectedIcon)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left">
-                <Copy className="w-4 h-4" />
-                Copy React
+              <button
+                onClick={() => copyReact(selectedIcon)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
+              >
+                <Code2Icon className="w-4 h-4" />
+                <span>Copy JSX</span>
               </button>
-              <button onClick={() => downloadSvg(selectedIcon)} className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors w-full text-left">
+              <button
+                onClick={() => downloadSvg(selectedIcon)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
+              >
                 <Download className="w-4 h-4" />
-                Download SVG
+                <span>Download SVG</span>
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
+  );
+}
+
+function Code2Icon({ className }: { className?: string }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
   );
 }
