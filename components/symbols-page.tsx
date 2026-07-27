@@ -28,6 +28,12 @@ const symbolLibraries: SymbolLibrary[] = [
     description: "Ornate divider symbols perfect for text separation",
   },
   {
+    name: "Script Dividers",
+    category: "separators",
+    symbols: ["∼","∿","≈","≋","≃","≅","≈","≡","≠","≤","≥","≪","≫","∝","∼","∽","≅","≈","≡"],
+    description: "Curved and script-style line separators",
+  },
+  {
     name: "Border Frames",
     category: "borders",
     symbols: ["┌─┐","│ │","└─┘","╔═╗","║ ║","╚═╝","┌─┬─┐","├─┼─┤","└─┴─┘","╔═╦═╗","╠═╬═╣","╚═╩═╝","╔╗","╠╣","╚╝"],
