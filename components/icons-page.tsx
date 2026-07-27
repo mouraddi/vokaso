@@ -44,8 +44,7 @@ export function IconsPage() {
 
         if (spriteRef.current) {
           spriteRef.current.innerHTML = spriteText
-            .replace('<?xml version="1.0" encoding="utf-8"?>', "")
-            .replace('xmlns="http://www.w3.org/2000/svg"', 'xmlns="http://www.w3.org/2000/svg" style="display:none"');
+            .replace('<?xml version="1.0" encoding="utf-8"?>', "");
           setSpriteReady(true);
         }
       })
@@ -131,7 +130,7 @@ export function IconsPage() {
 
   return (
     <div className="py-8 md:py-16 px-3 sm:px-4 lg:px-8">
-      <div ref={spriteRef} />
+      <div ref={spriteRef} style={{ display: "none" }} />
 
       <div className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-black text-white mb-2">🎨 Lucide Icons</h1>
