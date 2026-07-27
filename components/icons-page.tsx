@@ -193,23 +193,25 @@ export function IconsPage() {
 
       {selectedIcon && SelectedIcon && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSelectedIcon(null)}>
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-sm mx-4 text-center shadow-2xl border" onClick={(e) => e.stopPropagation()}>
-            <div className="flex justify-center mb-4">
-              <SelectedIcon className="w-16 h-16 text-cyan-400" />
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-xs mx-4 text-center shadow-2xl border" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-center mb-3">
+              <SelectedIcon className="w-12 h-12 text-cyan-400" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">{selectedIcon}</h2>
-            <div className="flex flex-col gap-3">
-              <Button onClick={() => copySvgCode(selectedIcon)} className="bg-cyan-500 hover:bg-cyan-400 text-white w-full">
-                {copied === selectedIcon ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />} Copy SVG
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">{selectedIcon}</h2>
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => copySvgCode(selectedIcon)} className="bg-cyan-500 hover:bg-cyan-400 text-white w-full text-sm">
+                {copied === selectedIcon ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                Copy SVG
               </Button>
-              <Button onClick={() => copyReact(selectedIcon)} variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full">
-                <Code2Icon className="w-4 h-4 mr-2" /> Copy React
+              <Button onClick={() => copyReact(selectedIcon)} variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full text-sm">
+                Copy React Code
               </Button>
-              <Button onClick={() => downloadSvg(selectedIcon)} variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full">
-                <Download className="w-4 h-4 mr-2" /> Download SVG
+              <Button onClick={() => downloadSvg(selectedIcon)} variant="outline" className="border-white/30 text-white hover:bg-white/10 w-full text-sm">
+                <Download className="w-4 h-4 mr-2" />
+                Download SVG
               </Button>
             </div>
-            <button onClick={() => setSelectedIcon(null)} className="mt-6 text-xs text-white/40 hover:text-white/60">
+            <button onClick={() => setSelectedIcon(null)} className="mt-4 text-xs text-white/40 hover:text-white/60">
               Close
             </button>
           </div>

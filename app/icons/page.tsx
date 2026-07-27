@@ -63,7 +63,7 @@ export default function Icons() {
         <SiteFooter />
       </div>
 
-      <Toaster position="bottom-right" expand richColors closeButton theme="dark" />
+      <Toaster position="top-center" expand richColors closeButton theme="dark" />
     </main>
   );
 }
