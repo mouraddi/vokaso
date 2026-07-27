@@ -15,6 +15,62 @@ function toKebabCase(name: string): string {
 
 const LUCIDE_CDN = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons";
 
+const iconTags: Record<string, string[]> = {
+  Heart: ["love", "like", "favorite", "emotion"],
+  Star: ["favorite", "rating", "review", "starred"],
+  Home: ["house", "building", "navigation"],
+  User: ["person", "profile", "avatar", "account"],
+  Settings: ["gear", "preferences", "configuration", "options"],
+  Bell: ["notification", "alert", "reminder"],
+  Mail: ["email", "message", "envelope", "letter"],
+  Search: ["find", "lookup", "magnifier", "zoom"],
+  Camera: ["photo", "picture", "image", "video"],
+  Image: ["photo", "picture", "gallery"],
+  Music: ["song", "audio", "note", "sound"],
+  Play: ["video", "start", "media", "music"],
+  Globe: ["world", "earth", "international", "language"],
+  Lock: ["security", "password", "private", "safe"],
+  Sun: ["light", "brightness", "day", "weather"],
+  Moon: ["night", "dark", "sleep", "weather"],
+  Cloud: ["weather", "storage", "server"],
+  Download: ["save", "import", "arrow"],
+  Upload: ["share", "export", "arrow"],
+  Trash2: ["delete", "remove", "bin", "garbage"],
+  Edit: ["pencil", "write", "modify", "change"],
+  Share2: ["social", "export", "send"],
+  MessageCircle: ["chat", "bubble", "comment", "discord"],
+  Phone: ["call", "contact", "mobile", "telephone"],
+  MapPin: ["location", "marker", "place", "address"],
+  Calendar: ["date", "event", "schedule", "time"],
+  Clock: ["time", "hour", "watch", "schedule"],
+  Eye: ["view", "visibility", "show", "preview"],
+  EyeOff: ["hidden", "invisible", "hide", "privacy"],
+  ThumbsUp: ["like", "approve", "vote", "positive"],
+  MessageSquare: ["chat", "comment", "review", "feedback"],
+  ShoppingCart: ["cart", "buy", "purchase", "checkout"],
+  Bookmark: ["save", "favorite", "bookmark"],
+  Flag: ["report", "country", "marker"],
+  Award: ["badge", "prize", "achievement", "winner"],
+  Zap: ["lightning", "power", "energy", "fast"],
+  Fire: ["hot", "popular", "trending", "flame"],
+  AlertCircle: ["warning", "danger", "error", "notification"],
+  Info: ["information", "help", "details"],
+  HelpCircle: ["question", "support", "faq"],
+  Link: ["url", "chain", "hyperlink", "connect"],
+  Code2: ["code", "developer", "programming", "bracket"],
+  Terminal: ["command", "console", "developer", "cli"],
+  Database: ["data", "storage", "server", "backend"],
+  Server: ["host", "network", "backend"],
+  Cpu: ["processor", "chip", "hardware", "computer"],
+  Wifi: ["network", "wireless", "internet", "connectivity"],
+  Smartphone: ["phone", "mobile", "device", "screen"],
+  Monitor: ["screen", "display", "desktop", "computer"],
+  BookOpen: ["reading", "book", "education", "learning"],
+  Gift: ["present", "birthday", "donation"],
+  Rocket: ["launch", "startup", "space", "fast"],
+  Trophy: ["winner", "prize", "achievement", "sports"],
+};
+
 export function IconsPage() {
   const [search, setSearch] = useState("");
   const [copied, setCopied] = useState<string | null>(null);
@@ -31,7 +87,6 @@ export function IconsPage() {
         (name) => /^[A-Z]/.test(name) && !EXCLUDE_ICONS.has(name) && typeof iconsMap[name] === "function"
       ).sort();
       setAllIcons(names);
-
       const comps: Record<string, React.ComponentType<{ className?: string }>> = {};
       for (const name of names) {
         comps[name] = iconsMap[name] as React.ComponentType<{ className?: string }>;
@@ -58,35 +113,29 @@ export function IconsPage() {
   }, [popupPos]);
 
   const fetchSvg = async (name: string): Promise<string> => {
-    try {
-      const res = await fetch(`${LUCIDE_CDN}/${toKebabCase(name)}.svg`);
-      if (!res.ok) throw new Error("Not found");
-      return await res.text();
-    } catch {
-      return "";
-    }
+    const res = await fetch(`${LUCIDE_CDN}/${toKebabCase(name)}.svg`);
+    if (!res.ok) throw new Error("Not found");
+    return await res.text();
   };
 
   const copyReact = async (name: string) => {
     const code = `import { ${name} } from "lucide-react";\n\n<${name} className="w-6 h-6" />`;
     await navigator.clipboard.writeText(code);
     setCopied(name);
-    toast.success(`${name} React code copied!`);
+    toast.success("JSX code copied!");
     setTimeout(() => setCopied(null), 1500);
   };
 
   const copySvgCode = async (name: string) => {
     const svg = await fetchSvg(name);
-    if (!svg) { toast.error("Could not fetch SVG from CDN"); return; }
     await navigator.clipboard.writeText(svg);
     setCopied(name);
-    toast.success(`${name} SVG copied!`);
+    toast.success("SVG code copied!");
     setTimeout(() => setCopied(null), 1500);
   };
 
   const downloadSvg = async (name: string) => {
     const svg = await fetchSvg(name);
-    if (!svg) { toast.error("Could not fetch SVG from CDN"); return; }
     const blob = new Blob([svg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -95,6 +144,16 @@ export function IconsPage() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success(`${name}.svg downloaded!`);
+  };
+
+  const copyName = async (name: string) => {
+    await navigator.clipboard.writeText(name);
+    toast.success(`"${name}" copied!`);
+  };
+
+  const copyKebab = async (name: string) => {
+    await navigator.clipboard.writeText(toKebabCase(name));
+    toast.success(`"${toKebabCase(name)}" copied!`);
   };
 
   const handleIconClick = useCallback((name: string, e: React.MouseEvent) => {
@@ -108,17 +167,20 @@ export function IconsPage() {
     if (!q) return allIcons;
     return allIcons.filter((name) => {
       const kebab = toKebabCase(name);
-      return name.toLowerCase().includes(q) || kebab.includes(q);
+      const tags = iconTags[name] || [];
+      return name.toLowerCase().includes(q) || kebab.includes(q) || tags.some((t) => t.includes(q));
     });
   }, [search, allIcons]);
 
   const SelectedIcon = selectedIcon && iconComponents[selectedIcon] ? iconComponents[selectedIcon] : null;
+  const selectedKebab = selectedIcon ? toKebabCase(selectedIcon) : "";
+  const selectedTags = selectedIcon ? iconTags[selectedIcon] || [] : [];
 
   return (
     <div className="py-8 md:py-16 px-3 sm:px-4 lg:px-8">
       <div className="text-center mb-8">
         <h1 className="text-4xl md:text-5xl font-black text-white mb-2">🎨 Lucide Icons</h1>
-        <p className="text-base text-white/70">Click any icon to copy SVG, React code, or download</p>
+        <p className="text-base text-white/70">Beautiful open-source icons. Click any icon to copy or download.</p>
       </div>
 
       <div className="max-w-6xl mx-auto mb-6">
@@ -128,7 +190,7 @@ export function IconsPage() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder={`Search ${filtered.length} icons...`}
+            placeholder={`Search ${allIcons.length} icons...`}
             className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-white/10 border border-white/20 text-white text-sm placeholder-white/40 focus:outline-none focus:border-cyan-400/50"
           />
           {search && (
@@ -141,7 +203,7 @@ export function IconsPage() {
 
       <div className="max-w-6xl mx-auto">
         {allIcons.length === 0 ? (
-          <p className="text-white/40 text-center">Loading icons...</p>
+          <p className="text-white/40 text-center py-20">Loading {">"} 1,500 icons...</p>
         ) : (
           <>
             {search && (
@@ -179,35 +241,44 @@ export function IconsPage() {
           style={{ top: popupPos.top, left: popupPos.left }}
           className="fixed z-50 -translate-x-1/2"
         >
-          <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-5 shadow-2xl border border-gray-700 min-w-[200px]">
-            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-gray-700">
+          <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-5 shadow-2xl border border-gray-700 min-w-[220px]">
+            <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-700">
               <SelectedIcon className="w-8 h-8 text-cyan-400 shrink-0" />
-              <div>
-                <p className="text-sm font-semibold text-white">{selectedIcon}</p>
-                <p className="text-[10px] text-gray-400">{toKebabCase(selectedIcon)}.svg</p>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white truncate">{selectedIcon}</p>
+                <p className="text-[10px] text-gray-400 truncate">{selectedKebab}.svg</p>
               </div>
             </div>
+
+            {selectedTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 mb-3">
+                {selectedTags.map((tag) => (
+                  <span key={tag} className="px-1.5 py-0.5 text-[9px] rounded bg-white/10 text-gray-400">{tag}</span>
+                ))}
+              </div>
+            )}
+
             <div className="flex flex-col gap-1">
-              <button
-                onClick={() => copySvgCode(selectedIcon)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
-              >
+              <button onClick={() => copySvgCode(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 {copied === selectedIcon ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
                 <span>Copy SVG</span>
               </button>
-              <button
-                onClick={() => copyReact(selectedIcon)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
-              >
+              <button onClick={() => copyReact(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <Code2Icon className="w-4 h-4" />
                 <span>Copy JSX</span>
               </button>
-              <button
-                onClick={() => downloadSvg(selectedIcon)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left"
-              >
+              <button onClick={() => downloadSvg(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <Download className="w-4 h-4" />
                 <span>Download SVG</span>
+              </button>
+              <div className="border-t border-gray-700 my-1" />
+              <button onClick={() => copyName(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+                <Copy className="w-4 h-4" />
+                <span>Copy &quot;{selectedIcon}&quot;</span>
+              </button>
+              <button onClick={() => copyKebab(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+                <Copy className="w-4 h-4" />
+                <span>Copy &quot;{selectedKebab}&quot;</span>
               </button>
             </div>
           </div>
