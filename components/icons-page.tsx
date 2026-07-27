@@ -48,9 +48,10 @@ export function IconsPage() {
   const [icons, setIcons] = useState<Record<string, React.ComponentType<{ className?: string }>>>({});
 
   useEffect(() => {
-    import("lucide-react").then((mod) => {
+    import("lucide-react").then((mod: unknown) => {
+      const iconsMap = mod as Record<string, React.ComponentType<{ className?: string }>>;
       const allIcons = iconList.reduce((acc, name) => {
-        const Icon = (mod as Record<string, React.ComponentType<{ className?: string }>>)[name];
+        const Icon = iconsMap[name];
         if (Icon) acc[name] = Icon;
         return acc;
       }, {} as Record<string, React.ComponentType<{ className?: string }>>);
