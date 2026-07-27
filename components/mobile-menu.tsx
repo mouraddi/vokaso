@@ -73,6 +73,20 @@ export function MobileMenu({ themeToggle }: MobileMenuProps) {
                     About
                   </Link>
                   <Link
+                    href="/icons"
+                    onClick={closeMenu}
+                    className="flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-green-500/80 to-teal-500/80 hover:from-green-400 hover:to-teal-400 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-white/20"
+                  >
+                    Icons
+                  </Link>
+                  <Link
+                    href="/symbols"
+                    onClick={closeMenu}
+                    className="flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500/80 to-purple-500/80 hover:from-pink-400 hover:to-purple-400 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-white/20"
+                  >
+                    Symbols
+                  </Link>
+                  <Link
                     href="/faq"
                     onClick={closeMenu}
                     className="flex items-center px-4 py-3 rounded-xl bg-gradient-to-r from-pink-500/80 to-gray-500/80 hover:from-pink-400 hover:to-gray-400 text-white font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-white/20"

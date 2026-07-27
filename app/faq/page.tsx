@@ -101,6 +101,18 @@ export default function FAQ() {
                 Font Generator
               </Link>
               <Link
+                href="/icons"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-400 hover:to-teal-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+              >
+                Icons
+              </Link>
+              <Link
+                href="/symbols"
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
+              >
+                Symbols
+              </Link>
+              <Link
                 href="/about"
                 className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-gray-500 hover:from-purple-400 hover:to-gray-400 text-white font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 backdrop-blur-sm border border-white/20"
               >
@@ -132,12 +144,6 @@ export default function FAQ() {
                   Everything you need to know about fancy text generation and
                   our tool
                 </p>
-                <Link
-                  href="/contact"
-                  className="inline-block px-6 py-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-400 hover:to-pink-400 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                >
-                  Still have questions? Contact us!
-                </Link>
               </div>
 
               {/* FAQ Content */}
@@ -219,26 +225,17 @@ export default function FAQ() {
               {/* Bottom CTA */}
               <div className="text-center mt-16 bg-gradient-to-r from-cyan-500/20 to-pink-500/20 .dark:from-cyan-400/10 .dark:to-pink-400/10 rounded-3xl p-8 border border-white/20">
                 <h2 className="text-3xl font-bold text-white mb-4">
-                  Didn't find what you're looking for?
+                  Ready to try it?
                 </h2>
                 <p className="text-white/90 text-lg mb-6">
-                  Our team is here to help! Send us an email and we'll get back
-                  to you as soon as possible.
+                  Start transforming your text with our free tool
                 </p>
-                <div className="space-x-4">
-                  <Link
-                    href="/contact"
-                    className="inline-block px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-400 hover:to-teal-400 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                  >
-                    Contact Us
-                  </Link>
-                  <a
-                    href="mailto:support@fancytextgenerator.com?subject=FAQ Question"
-                    className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-400 hover:to-purple-400 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                  >
-                    Email Support
-                  </a>
-                </div>
+                <Link
+                  href="/"
+                  className="inline-block px-8 py-4 bg-gradient-to-r from-cyan-500 to-pink-500 hover:from-cyan-400 hover:to-pink-400 text-white font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                >
+                  Try Font Generator
+                </Link>
               </div>
             </div>
           </div>
