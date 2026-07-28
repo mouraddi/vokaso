@@ -9,24 +9,12 @@ function toPascalCase(name: string): string {
   return name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join("");
 }
 
-const SPRITE_URL = "https://cdn.jsdelivr.net/npm/lucide-static@latest/sprite.svg";
 const CDN = "https://cdn.jsdelivr.net/npm/lucide-static@latest/icons";
 
 interface IconData {
   name: string;
   pascal: string;
   svg: string;
-}
-
-function extractSvgFromSprite(spriteText: string): Record<string, string> {
-  const map: Record<string, string> = {};
-  const symbolRegex = /<symbol\s+id="([^"]+)"[^>]*viewBox="([^"]*)"[^>]*>([\s\S]*?)<\/symbol>/g;
-  let match;
-  while ((match = symbolRegex.exec(spriteText)) !== null) {
-    const [, id, viewBox, inner] = match;
-    map[id] = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
-  }
-  return map;
 }
 
 export function IconsPage() {
@@ -40,22 +28,45 @@ export function IconsPage() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      fetch("https://cdn.jsdelivr.net/npm/lucide-static@latest/tags.json").then((r) => r.json()),
-      fetch(SPRITE_URL).then((r) => r.text()),
-    ])
-      .then(([tagsData, spriteText]) => {
+    fetch("https://cdn.jsdelivr.net/npm/lucide-static@latest/tags.json")
+      .then((r) => r.json())
+      .then((data) => {
         if (cancelled) return;
-        const names = Object.keys(tagsData as Record<string, unknown>).sort();
-        const svgMap = extractSvgFromSprite(spriteText);
-        setIcons(
-          names.map((n) => ({
-            name: n,
-            pascal: toPascalCase(n),
-            svg: svgMap[n] || "",
-          }))
-        );
+        const names = Object.keys(data as Record<string, unknown>).sort();
+        setIcons(names.map((n) => ({ name: n, pascal: toPascalCase(n), svg: "" })));
         setLoading(false);
+
+        fetch("https://cdn.jsdelivr.net/npm/lucide-static@latest/sprite.svg")
+          .then((r) => r.text())
+          .then((spriteText) => {
+            if (cancelled) return;
+            const svgMap: Record<string, string> = {};
+            const symbolRegex = /<symbol\s+id="([^"]+)"[^>]*viewBox="([^"]*)"[^>]*>([\s\S]*?)<\/symbol>/g;
+            let match;
+            while ((match = symbolRegex.exec(spriteText)) !== null) {
+              const [, id, viewBox, inner] = match;
+              svgMap[id] = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+            }
+
+            const batchSize = 100;
+            let start = 0;
+            const fillBatch = () => {
+              if (cancelled) return;
+              const batch = names.slice(start, start + batchSize);
+              if (batch.length === 0) return;
+              setIcons((prev) =>
+                prev.map((ico) =>
+                  batch.includes(ico.name) && svgMap[ico.name]
+                    ? { ...ico, svg: svgMap[ico.name] }
+                    : ico,
+                ),
+              );
+              start += batchSize;
+              if (start < names.length) requestAnimationFrame(fillBatch);
+            };
+            requestAnimationFrame(fillBatch);
+          })
+          .catch(() => {});
       })
       .catch(() => {
         if (!cancelled) setLoading(false);
@@ -81,26 +92,28 @@ export function IconsPage() {
     };
   }, [popupPos]);
 
-  const copyReact = (pascal: string) => {
+  const copyReact = async (pascal: string, kebab: string) => {
     const code = `import { ${pascal} } from "lucide-react";\n\n<${pascal} className="w-6 h-6" />`;
-    navigator.clipboard.writeText(code);
+    await navigator.clipboard.writeText(code);
     toast.success("JSX code copied!");
   };
 
-  const copySvgCode = (svg: string) => {
-    navigator.clipboard.writeText(svg);
+  const copySvgCode = async (kebab: string) => {
+    const svg = await fetch(`${CDN}/${kebab}.svg`).then((r) => r.text());
+    await navigator.clipboard.writeText(svg);
     toast.success("SVG code copied!");
   };
 
-  const downloadSvg = (ico: IconData) => {
-    const blob = new Blob([ico.svg], { type: "image/svg+xml" });
+  const downloadSvg = async (kebab: string) => {
+    const svg = await fetch(`${CDN}/${kebab}.svg`).then((r) => r.text());
+    const blob = new Blob([svg], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${ico.name}.svg`;
+    a.download = `${kebab}.svg`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success(`${ico.name}.svg downloaded!`);
+    toast.success(`${kebab}.svg downloaded!`);
   };
 
   const copyName = (text: string) => {
@@ -108,7 +121,7 @@ export function IconsPage() {
     toast.success("Copied!");
   };
 
-  const handleIconClick = useCallback((name: string, e: React.MouseEvent) => {
+  const handleIconClick = useCallback(async (name: string, e: React.MouseEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     setSelectedIcon(name);
     setPopupPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
@@ -174,7 +187,11 @@ export function IconsPage() {
                   )}
                   title={ico.pascal}
                 >
-                  <span className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:text-white" dangerouslySetInnerHTML={{ __html: ico.svg }} />
+                  {ico.svg ? (
+                    <span className="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5 [&>svg]:text-white" dangerouslySetInnerHTML={{ __html: ico.svg }} />
+                  ) : (
+                    <div className="w-5 h-5 rounded bg-white/10 animate-pulse" />
+                  )}
                   <span className="text-[9px] text-white/50 truncate w-full text-center leading-tight">{ico.pascal}</span>
                 </button>
               ))}
@@ -191,8 +208,10 @@ export function IconsPage() {
         >
           <div className="bg-gray-900 dark:bg-gray-800 rounded-xl p-5 shadow-2xl border border-gray-700 min-w-[220px]">
             <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-700">
-              {selected.svg && (
+              {selected.svg ? (
                 <span className="w-8 h-8 text-cyan-400 [&>svg]:w-8 [&>svg]:h-8" dangerouslySetInnerHTML={{ __html: selected.svg }} />
+              ) : (
+                <div className="w-8 h-8 rounded bg-white/10 animate-pulse" />
               )}
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white truncate">{selected.pascal}</p>
@@ -201,15 +220,15 @@ export function IconsPage() {
             </div>
 
             <div className="flex flex-col gap-1">
-              <button onClick={() => copySvgCode(selected.svg)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+              <button onClick={() => copySvgCode(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 <span>Copy SVG</span>
               </button>
-              <button onClick={() => copyReact(selected.pascal)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+              <button onClick={() => copyReact(selected.pascal, selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                 <span>Copy JSX</span>
               </button>
-              <button onClick={() => downloadSvg(selected)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
+              <button onClick={() => downloadSvg(selectedIcon)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors w-full text-left">
                 <Download className="w-4 h-4" />
                 <span>Download SVG</span>
               </button>
