@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Download } from "lucide-react";
+import { toast } from "sonner";
+import html2canvas from "html2canvas";
 import { textStyles } from "@/lib/font-styles";
 
 export function PinterestPage() {
   const [text, setText] = useState("Vokaso");
   const [selectedStyle, setSelectedStyle] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
 
   const style = textStyles[selectedStyle];
 
@@ -17,6 +21,20 @@ export function PinterestPage() {
     "from-orange-500 to-red-500",
     "from-gray-700 to-gray-900",
   ];
+
+  const download = async () => {
+    if (!ref.current) return;
+    try {
+      const canvas = await html2canvas(ref.current, { scale: 2, backgroundColor: null, useCORS: true });
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = `vokaso-${style.slug}.png`;
+      a.click();
+      toast.success("Pin downloaded!");
+    } catch {
+      toast.error("Failed to generate image");
+    }
+  };
 
   return (
     <div className="min-h-screen py-10 px-4">
@@ -49,11 +67,19 @@ export function PinterestPage() {
             </button>
           ))}
         </div>
+        <button
+          onClick={download}
+          className="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold flex items-center justify-center gap-2 hover:scale-105 transition-transform"
+        >
+          <Download className="w-4 h-4" />
+          Download Pin (1200×1800)
+        </button>
       </div>
 
-      <div className="flex justify-center mb-6 select-none" id="pin-preview">
+      <div className="flex justify-center" style={{ minHeight: 930 }}>
         <div
-          className={`w-[600px] h-[900px] bg-gradient-to-br ${gradients[selectedStyle % gradients.length]} rounded-2xl p-12 flex flex-col items-center justify-center text-center shadow-2xl`}
+          ref={ref}
+          className={`w-[600px] h-[900px] bg-gradient-to-br ${gradients[selectedStyle % gradients.length]} p-12 flex flex-col items-center justify-center text-center shadow-2xl rounded-2xl`}
         >
           <div className="text-8xl font-bold text-white mb-8 leading-tight break-all" style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" }}>
             {style.transform(text)}
@@ -64,11 +90,11 @@ export function PinterestPage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto p-6 rounded-xl bg-white/5 border border-white/10">
+      <div className="max-w-2xl mx-auto mt-8 p-6 rounded-xl bg-white/5 border border-white/10">
         <h2 className="text-lg font-bold text-white mb-3">📌 Pinterest Strategy</h2>
         <ol className="text-white/70 text-sm space-y-2 list-decimal list-inside">
           <li>Create a <strong className="text-white">Pinterest Business Account</strong> (free)</li>
-          <li>Right-click the pin above → <strong className="text-white">Save image as</strong></li>
+          <li>Download pins with different texts and styles using the button above</li>
           <li>Upload to Pinterest with title: <span className="text-cyan-300">&quot;{style.name} - Fancy Unicode Text Generator&quot;</span></li>
           <li>Link to: <strong className="text-white">https://www.vokaso.com/fonts/{style.slug}</strong></li>
           <li>Post <strong className="text-white">3 pins/day</strong>, use 5 hashtags (#fancytext #unicode #fontgenerator #vokaso #{style.slug.replace(/-/g, "")})</li>
