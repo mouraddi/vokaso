@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import { FancyTextGenerator } from "@/components/fancy-text-generator";
 import { MobileMenu } from "@/components/mobile-menu";
@@ -272,6 +273,12 @@ export default function Home() {
 
             
           </div>
+        </div>
+
+        {/* Adsterra Native Banner */}
+        <div className="max-w-5xl mx-auto px-4 py-8">
+          <div id="container-659907ba4744cccdd0d4afea365e4ec3" />
+          <Script id="adsterra-native" strategy="afterInteractive" src="https://pl30567363.effectivecpmnetwork.com/659907ba4744cccdd0d4afea365e4ec3/invoke.js" />
         </div>
 
         <SiteFooter />

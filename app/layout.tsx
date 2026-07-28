@@ -129,7 +129,14 @@ export default function RootLayout({
         <Script id="clarity" strategy="afterInteractive">
           {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","xmpiwcf7m3");`}
         </Script>
-        <Script id="adsterra" strategy="afterInteractive" src="https://pl30552676.effectivecpmnetwork.com/7c/d5/b3/7cd5b37974d153a5a010059b1663b140.js" />
+        <Script id="adsterra-once" strategy="afterInteractive">{`
+          if (!sessionStorage.getItem("ap")) {
+            sessionStorage.setItem("ap", "1");
+            var s = document.createElement("script");
+            s.src = "https://pl30552676.effectivecpmnetwork.com/7c/d5/b3/7cd5b37974d153a5a010059b1663b140.js";
+            document.head.appendChild(s);
+          }
+        `}</Script>
         <Script id="adsterra-social" strategy="afterInteractive" src="https://pl30552677.effectivecpmnetwork.com/e8/66/67/e8666767d4475a75d65cf381415f3ca7.js" />
       </head>
       <body
