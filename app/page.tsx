@@ -271,6 +271,42 @@ export default function Home() {
               </div>
             </section>
 
+            {/* Tools Section */}
+            <section className="py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-8">
+                  🛠️ Free Online Tools
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {[
+                    { href: "/fonts", label: "Font Generator", icon: "✍️" },
+                    { href: "/zalgo", label: "Zalgo Text", icon: "👻" },
+                    { href: "/bubble-text", label: "Bubble Text", icon: "ⓑ" },
+                    { href: "/small-text", label: "Small Text", icon: "ᵗ" },
+                    { href: "/case-converter", label: "Case Converter", icon: "🔤" },
+                    { href: "/emoji-text", label: "Emoji Text", icon: "😊" },
+                    { href: "/nickname-generator", label: "Nicknames", icon: "🎮" },
+                    { href: "/instagram-bio", label: "Instagram Bio", icon: "💅" },
+                    { href: "/icons", label: "Icons Library", icon: "🔍" },
+                    { href: "/symbols", label: "Symbols", icon: "✦" },
+                    { href: "/pinterest", label: "Pin Creator", icon: "📌" },
+                    { href: "/tiktok", label: "TikTok Scripts", icon: "🎬" },
+                    { href: "/font-pairing-guide", label: "Font Guide", icon: "📖" },
+                    { href: "/batch", label: "Batch Pins", icon: "📦" },
+                  ].map((tool) => (
+                    <Link
+                      key={tool.href}
+                      href={tool.href}
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 hover:border-cyan-400/40 text-white/80 hover:text-white text-sm transition-all"
+                    >
+                      <span>{tool.icon}</span>
+                      <span className="truncate">{tool.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </section>
+
             
           </div>
         </div>
