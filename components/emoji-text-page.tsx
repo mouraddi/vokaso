@@ -81,8 +81,6 @@ const emojiMap: Record<string, string> = {
   sorry: "😔",
   hello: "👋",
   bye: "✌️",
-  yes: "✅",
-  no: "❌",
   up: "⬆️",
   down: "⬇️",
   left: "⬅️",
